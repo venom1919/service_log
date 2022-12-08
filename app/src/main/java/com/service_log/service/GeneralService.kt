@@ -1,14 +1,17 @@
 package com.service_log.service
 
 import android.R
+import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.Notification
+import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
+import com.service_log.receiver.AlarmReceiver
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -17,8 +20,6 @@ import java.util.concurrent.TimeUnit
 
 
 class GeneralService : Service() {
-
-    val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
     override fun onCreate() {
         val builder: Notification.Builder = Notification.Builder(this)
@@ -49,19 +50,29 @@ class GeneralService : Service() {
         super.onDestroy()
     }
 
-
     fun locationDataChange(){
 
     }
 
     /////Send data 1c
+    @SuppressLint("UnspecifiedImmutableFlag")
     fun writeData(){
 
-        val manager = getSystemService(ALARM_SERVICE) as AlarmManager
+        val receiver = Intent(this, AlarmReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(this, 0, receiver, PendingIntent.FLAG_ONE_SHOT)
+        val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
+
+        val timeInMillis = 2000L
+        alarmManager.setRepeating(
+            AlarmManager.RTC,
+            timeInMillis,
+            AlarmManager.RTC.toLong(),
+            pendingIntent
+        )
 
         runBlocking {
                 launch(Dispatchers.Default) {
-                Log.i("${Thread.currentThread()} has run.", "starick")
+                Log.i("${Thread.currentThread()} has run.", "strick")
             }
         }
 

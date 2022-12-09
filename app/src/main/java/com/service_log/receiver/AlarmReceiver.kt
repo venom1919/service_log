@@ -10,5 +10,4 @@ class AlarmReceiver: BroadcastReceiver() {
     override fun onReceive(p0: Context?, p1: Intent?) {
         Log.i("receiiiver", "sssssss")
     }
-
 }

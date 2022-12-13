@@ -14,10 +14,8 @@ import com.service_log.receiver.AlarmReceiver
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import java.util.Calendar
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
-
 
 class GeneralService : Service() {
 
@@ -51,7 +49,6 @@ class GeneralService : Service() {
     }
 
     fun locationDataChange(){
-
     }
 
     /////Send data 1c

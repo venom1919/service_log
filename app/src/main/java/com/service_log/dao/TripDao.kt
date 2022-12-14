@@ -22,4 +22,7 @@ interface TripDao {
     @Query("SELECT * FROM Trip Where date > :last_time")
     fun getAllWritesAfter(last_time: Date)
 
+    @Query("SELECT * FROM Trip Where date < :last_time")
+    fun getLatePosition(last_time: Date)
+
 }

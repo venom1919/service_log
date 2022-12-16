@@ -10,14 +10,19 @@ import android.content.Intent
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
+import com.service_log.api.ApiService
+import com.service_log.api.RetrofitApi
 import com.service_log.receiver.AlarmReceiver
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import retrofit2.Retrofit
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 class GeneralService : Service() {
+
+    lateinit var retrofitInstance: ApiService
 
     override fun onCreate() {
         val builder: Notification.Builder = Notification.Builder(this)
@@ -54,6 +59,8 @@ class GeneralService : Service() {
     /////Send data 1c
     @SuppressLint("UnspecifiedImmutableFlag")
     fun writeData(){
+
+        retrofitInstance = ApiService()
 
         val receiver = Intent(this, AlarmReceiver::class.java)
         val pendingIntent = PendingIntent.getBroadcast(this, 0, receiver, 0)

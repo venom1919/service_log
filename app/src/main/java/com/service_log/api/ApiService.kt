@@ -12,9 +12,9 @@ class ApiService {
     fun retrofitPost() :RetrofitApi{
 
         if (!::retrofitApi.isInitialized) {
-            Log.i("retrofitdont initi", GlobalAccess.URL)
+            Log.i("retrofitdont initi", GlobalAccess.UREL)
             val retrofitRes = Retrofit.Builder()
-                .baseUrl(GlobalAccess.URL)
+                .baseUrl(GlobalAccess.UREL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
 

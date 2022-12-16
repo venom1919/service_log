@@ -2,10 +2,9 @@ package com.service_log.api
 
 import com.service_log.constant.GlobalAccess
 import com.service_log.model.PostsResponse
-import retrofit2.http.GET
-import retrofit2.http.Header
-import retrofit2.http.Headers
-import retrofit2.http.POST
+import com.service_log.model.Trip
+import com.squareup.moshi.Json
+import retrofit2.http.*
 
 interface RetrofitApi {
 
@@ -23,8 +22,9 @@ interface RetrofitApi {
     fun test(@Header("Authorization") Authorization: String,
              @Header("Access-Token") accessToken:String,
              @Header("auth-token") authToken:String,
-             @Header("Accept") Accept:String = "application/json, text/plain, */*",
-             @Header("Content-Type") Content_Type :String = "application/json;charset=utf-8"
+             @Header("Accept") Accept:String,
+             @Header("Content-Type") Content_Type :String,
+             @Body details:Trip
              ): retrofit2.Call<PostsResponse>
 
     @Headers()

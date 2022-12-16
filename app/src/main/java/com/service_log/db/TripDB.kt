@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.service_log.constant.GlobalAccess
 import com.service_log.dao.TripDao
 import com.service_log.model.Trip
 
@@ -19,7 +20,7 @@ abstract class TripDB : RoomDatabase() {
                                 INSTANCE = Room.databaseBuilder(
                                         context,
                                         TripDB::class.java,
-                                        "TripService.db")
+                                        GlobalAccess.DB)
                                         .build()
                         }
 

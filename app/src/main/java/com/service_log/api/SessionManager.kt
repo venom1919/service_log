@@ -1,4 +1,11 @@
 package com.service_log.api
 
-class SessionManager {
+import android.content.Context
+
+class SessionManager(context: Context) {
+
+    
+
+
+
 }

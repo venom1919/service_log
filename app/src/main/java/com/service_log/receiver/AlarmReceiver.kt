@@ -1,33 +1,41 @@
 package com.service_log.receiver
 
+import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.util.Log
 import com.service_log.api.ApiService
-import com.service_log.api.RetrofitApi
 import com.service_log.constant.GlobalAccess
+import com.service_log.enums.TypeEvent
 import com.service_log.model.PostsResponse
+import com.service_log.model.Trip
 import okhttp3.Credentials
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.text.SimpleDateFormat
+import java.util.Date
 import kotlin.math.log
 
 class AlarmReceiver: BroadcastReceiver() {
 
     lateinit var retrofitClient: ApiService
 
+    @SuppressLint("SimpleDateFormat")
     override fun onReceive(p0: Context?, p1: Intent?) {
 
         retrofitClient = ApiService()
 
-        var cr = Credentials.basic(GlobalAccess.LOGIN, GlobalAccess.PASSW)
+//        var cr = Credentials.basic(GlobalAccess.LOGIN, GlobalAccess.PASSW)
 
-        Log.i("sssss3343", cr)
-        Log.i("receiiverrr", "333")
-        retrofitClient.retrofitPost().test("Basic dHNkLnRhYnVyZXRrYS51YToxMnF3YXN6eDIzd2VzZHhj",
-            GlobalAccess.ACCESS_TOKEN, GlobalAccess.AUTH_TOKEN).enqueue(object :
+        val sdf = SimpleDateFormat("dd/M/yyyy hh:mm:ss")
+        val currentDate = sdf.format(Date())
+        var tripak = Trip(1, "22", TypeEvent.LOCATION,"details", currentDate)
+
+        Log.i("rrr", tripak.toString())
+        retrofitClient.retrofitPost().test(Credentials.basic(GlobalAccess.LOGIN, GlobalAccess.PASSW),
+            GlobalAccess.ACCESS_TOKEN, GlobalAccess.AUTH_TOKEN, GlobalAccess.ACCEPT, GlobalAccess.CONTENT_TYPE, tripak).enqueue(object :
             Callback<PostsResponse>{
 
             override fun onFailure(call: Call<PostsResponse>, t: Throwable) {

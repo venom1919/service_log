@@ -60,6 +60,10 @@
             android:exported="true"
             android:enabled="true"/>
 
+        <receiver android:name=".receiver.LocationStatusReceiver"
+            android:exported="true"
+            android:enabled="true" />
+
     </application>
 
 </manifest>

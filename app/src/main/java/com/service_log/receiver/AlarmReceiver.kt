@@ -27,8 +27,6 @@ class AlarmReceiver: BroadcastReceiver() {
 
         retrofitClient = ApiService()
 
-//        var cr = Credentials.basic(GlobalAccess.LOGIN, GlobalAccess.PASSW)
-
         val sdf = SimpleDateFormat("dd/M/yyyy hh:mm:ss")
         val currentDate = sdf.format(Date())
         var tripak = Trip(1, "22", TypeEvent.LOCATION,"details", currentDate)

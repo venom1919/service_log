@@ -8,14 +8,14 @@ class CalcAccummulateLocation {
     lateinit var location: Location
     lateinit var tripDao: TripDao
 
+
+
+
+
     fun accumullate(location: Location, tripDao: TripDao){
 
 
-
     }
-
-
-
 
 
 }

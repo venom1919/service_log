@@ -1,5 +1,6 @@
 package com.service_log.service
 
+//import android.support.v4.app.ActivityCompat
 import android.R
 import android.annotation.SuppressLint
 import android.app.AlarmManager
@@ -10,19 +11,26 @@ import android.content.Intent
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.api.GoogleApiClient
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.service_log.api.ApiService
-import com.service_log.api.RetrofitApi
+import com.service_log.model.Location
 import com.service_log.receiver.AlarmReceiver
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import retrofit2.Retrofit
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
-class GeneralService : Service() {
+class GeneralService : Service(), GoogleApiClient.OnConnectionFailedListener  {
 
     lateinit var retrofitInstance: ApiService
+    var location: Location?=null
+//    private var mMap: GoogleMap? = null
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    lateinit var apiClient: GoogleApiClient
 
     override fun onCreate() {
         val builder: Notification.Builder = Notification.Builder(this)
@@ -31,8 +39,45 @@ class GeneralService : Service() {
         startForeground(777, notification)
         Log.i("servicess", "www")
         writeData()
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
+
+//        val client = GoogleApiClient.Builder(this)
+//            .enableAutoManage(this, this)
+//            .addApi(LocationServices.API)
+//            .build()
+//        client.connect()
+
+//        fusedLocationClient.
+//        if (androidx.core.app.ActivityCompat.checkSelfPermission(
+//                this,
+//                Manifest.permission.ACCESS_FINE_LOCATION
+//            ) != PackageManager.PERMISSION_GRANTED && androidx.core.app.ActivityCompat.checkSelfPermission(
+//                this,
+//                Manifest.permission.ACCESS_COARSE_LOCATION
+//            ) != PackageManager.PERMISSION_GRANTED
+//        ) {
+//            fusedLocationClient.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY, object : CancellationToken() {
+//                override fun onCanceledRequested(p0: OnTokenCanceledListener) = CancellationTokenSource().token
+//                override fun isCancellationRequested() = false
+//            }).addOnSuccessListener { loc: android.location.Location? ->  if (location == null)
+//                Toast.makeText(this, "Cannot get location.", Toast.LENGTH_SHORT).show()
+//            else {
+//                    val lat = loc?.longitude
+//                    val lon = loc?.longitude
+//            }
+//
+//            }
+//
+//            return
+//        }
+
     }
 
+    fun exApiGoogle(apiClient: GoogleApiClient){
+
+    }
     override fun onBind(p0: Intent?): IBinder? {
         Log.i("ncn", "lllll")
         TODO("Not yet implemented")
@@ -82,6 +127,10 @@ class GeneralService : Service() {
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(Runnable {
             Log.i("Jobss", "yes")
         }, 0, 3, TimeUnit.SECONDS)
+    }
+
+    override fun onConnectionFailed(p0: ConnectionResult) {
+
     }
 
 }

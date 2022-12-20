@@ -1,8 +1,9 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
-}
 
+}
+apply plugin: 'kotlin-kapt'
 android {
     namespace 'com.service_log'
     compileSdk 32
@@ -45,9 +46,14 @@ dependencies {
     ///GSON
     implementation 'com.google.code.gson:gson:2.10'
 
-    ////room
+//    ////room
+//    implementation("androidx.room:room-runtime:2.4.3")
+//    annotationProcessor("androidx.room:room-compiler:2.4.3")
+
+    kapt("androidx.room:room-compiler:2.4.3")
     implementation("androidx.room:room-runtime:2.4.3")
-    annotationProcessor("androidx.room:room-compiler:2.4.3")
+    implementation("androidx.room:room-ktx:2.4.3")
+
 
     ///retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'

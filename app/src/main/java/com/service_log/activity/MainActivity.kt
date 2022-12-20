@@ -61,10 +61,10 @@ open class MainActivity: AppCompatActivity(), GoogleApiClient.ConnectionCallback
             .addApi(LocationServices.API)
             .build()
 
-        mLocationRequest.interval = 0
+        mLocationRequest.interval = 10000
         mLocationRequest.fastestInterval = 0
 
-        val priority = LocationRequest.PRIORITY_HIGH_ACCURACY //by default
+        val priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         mLocationRequest.priority = priority
         mLocationClient.connect()
 
@@ -86,7 +86,7 @@ open class MainActivity: AppCompatActivity(), GoogleApiClient.ConnectionCallback
             ) != PackageManager.PERMISSION_GRANTED
         ) {
 
-            Log.i("ds", "333")
+            Log.i("ds23232", "333")
             return
         }
         LocationServices.FusedLocationApi.requestLocationUpdates(
@@ -97,10 +97,13 @@ open class MainActivity: AppCompatActivity(), GoogleApiClient.ConnectionCallback
     }
 
     override fun onConnectionSuspended(p0: Int) {
+        Log.i("xcxqe23", "xzx")
+
     }
 
     override fun onLocationChanged(p0: Location?) {
-        Log.i("sss226", p0?.latitude.toString() + " " + p0?.longitude.toString())
+//        Log.p0.provider
+        Log.i("tutut233", p0?.latitude.toString() + " " + p0?.longitude.toString())
     }
 
 

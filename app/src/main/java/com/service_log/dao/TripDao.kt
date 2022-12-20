@@ -11,18 +11,20 @@ import java.util.Date
 interface TripDao {
 
     @Query("SELECT * FROM Trip")
-    suspend fun getAll(): List<Trip>
+    suspend fun getAllTrip(): List<Trip>
 
     @Insert
-    suspend fun insertAll(Trips: List<Trip>)
+    fun insertAll(trip: Trip)
 
     @Delete
     suspend fun delete(Trip: Trip)
 
-    @Query("SELECT * FROM Trip Where date > :last_time")
-    fun getAllWritesAfter(last_time: Date)
+    @Query("SELECT * FROM Trip")
+    fun getAllWritesAfter(): List<Trip>
 
-    @Query("SELECT * FROM Trip Where date < :last_time")
-    fun getLatePosition(last_time: Date)
+    @Query("SELECT * FROM Trip")
+    fun getLatePosition(): List<Trip>
+
+
 
 }

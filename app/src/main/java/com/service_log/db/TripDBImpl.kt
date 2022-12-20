@@ -1,5 +1,4 @@
 package com.service_log.db
 
-class DataRepo {
-
+class TripDBImpl  {
 }

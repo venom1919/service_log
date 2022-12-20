@@ -16,8 +16,10 @@ import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.service_log.api.ApiService
+import com.service_log.db.TripDB
 import com.service_log.model.Location
 import com.service_log.receiver.AlarmReceiver
+import com.service_log.service.location.TrackTrace
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -31,13 +33,15 @@ class GeneralService : Service(), GoogleApiClient.OnConnectionFailedListener  {
 //    private var mMap: GoogleMap? = null
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     lateinit var apiClient: GoogleApiClient
-
+    lateinit var trackTrace:TrackTrace
     override fun onCreate() {
         val builder: Notification.Builder = Notification.Builder(this)
             .setSmallIcon(R.drawable.star_on)
         val notification: Notification = if (Build.VERSION.SDK_INT < 16) builder.getNotification() else builder.build()
         startForeground(777, notification)
         Log.i("servicess", "www")
+
+        trackTrace = TrackTrace(this)
         writeData()
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)

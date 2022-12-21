@@ -31,8 +31,6 @@ abstract class TripDB : RoomDatabase() {
 ////                        return INSTANCE as TripDB
 ////                }
 //
-//
-//
 //        }
 //
 //                private fun buildDatabase(context: Context) = Room.databaseBuilder(context,

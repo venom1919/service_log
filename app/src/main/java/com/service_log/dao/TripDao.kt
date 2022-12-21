@@ -11,13 +11,13 @@ import java.util.Date
 interface TripDao {
 
     @Query("SELECT * FROM Trip")
-    suspend fun getAllTrip(): List<Trip>
+    fun getAllTrip(): List<Trip>
 
     @Insert
     fun insertAll(trip: Trip)
 
     @Delete
-    suspend fun delete(Trip: Trip)
+    fun delete(Trip: Trip)
 
     @Query("SELECT * FROM Trip")
     fun getAllWritesAfter(): List<Trip>

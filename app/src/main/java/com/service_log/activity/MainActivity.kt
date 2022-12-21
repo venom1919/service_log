@@ -51,7 +51,7 @@ open class MainActivity: AppCompatActivity(), GoogleApiClient.ConnectionCallback
 //            return
 //        }
 //        fusedLocationClient.requestLocationUpdates(LocationRequest.create(), pendingIntent).addOnSuccessListener {
-////            lis -> lis.
+///            lis -> lis.
 //        }
         //////2------------
 
@@ -105,6 +105,5 @@ open class MainActivity: AppCompatActivity(), GoogleApiClient.ConnectionCallback
 //        Log.p0.provider
         Log.i("tutut233", p0?.latitude.toString() + " " + p0?.longitude.toString())
     }
-
 
 }

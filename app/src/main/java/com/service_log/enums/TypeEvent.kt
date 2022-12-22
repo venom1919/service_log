@@ -7,5 +7,6 @@ enum class TypeEvent {
     LOCATION_BUTTON_ON,
     LOCATION_BUTTON_OFF,
     AIRPLANE_MODE,
-    CHANGE_STATE_1C
+    CHANGE_STATE_1C,
+    REBOOT
 }

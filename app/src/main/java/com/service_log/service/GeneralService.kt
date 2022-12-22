@@ -1,6 +1,5 @@
 package com.service_log.service
 
-//import android.support.v4.app.ActivityCompat
 import android.R
 import android.annotation.SuppressLint
 import android.app.AlarmManager
@@ -14,20 +13,18 @@ import android.os.IBinder
 import android.util.Log
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
-import com.google.android.gms.location.*
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
 import com.service_log.api.ApiService
-import com.service_log.db.TripDB
-import com.service_log.model.Location
 import com.service_log.receiver.AlarmReceiver
 import com.service_log.service.location.TrackTrace
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import java.text.DateFormat
-import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
-import kotlin.math.log
 
 class GeneralService : Service(), GoogleApiClient.OnConnectionFailedListener  {
 
@@ -58,7 +55,6 @@ class GeneralService : Service(), GoogleApiClient.OnConnectionFailedListener  {
         mLocationRequest!!.interval = 0
         mLocationRequest!!.fastestInterval = 0
         mLocationRequest!!.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-
 
         mLocationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {

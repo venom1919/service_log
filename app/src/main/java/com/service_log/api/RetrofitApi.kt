@@ -15,7 +15,7 @@ interface RetrofitApi {
                  @Header("Content-Type") content_Type:String,
 //                 @Header("login") login:String,
 //                 @Header("passw") passw:String,
-                 @Header("Authorization") Authorization:String = "Basic dHNkLnRhYnVyZXRrYS51YToxMnF3YXN6eDIzd2VzZHhj"
+                 @Header("Authorization") Authorization:String
                  ): retrofit2.Call<PostsResponse>
 
     @POST("WriteInfoByTrip")

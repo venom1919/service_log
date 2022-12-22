@@ -8,10 +8,10 @@ object GlobalAccess {
     const val PORT = 443
 
     const val CONTENT_TYPE = "application/json"
-    const val LOGIN = "******"
-    const val PASSW = "******"
-    const val AUTH_TOKEN = "****"
-    const val ACCESS_TOKEN = "****"
+    const val LOGIN = "***********"
+    const val PASSW = "**************"
+    const val AUTH_TOKEN = "**************"
+    const val ACCESS_TOKEN = "**************"
     const val ACCEPT = "application/json, text/plain, */*"
     const val DB = "TripService.db"
 

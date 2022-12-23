@@ -5,10 +5,15 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Context.LOCATION_SERVICE
 import android.content.pm.PackageManager
+import android.location.GnssStatus
+import android.location.GpsSatellite
 import android.location.Location
 import android.location.LocationManager
+import android.os.Build
 import android.os.Bundle
+import android.telephony.*
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.constraintlayout.motion.widget.Debug.getLocation
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.common.ConnectionResult
@@ -23,6 +28,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
+
+@RequiresApi(Build.VERSION_CODES.S)
 class TrackTrace(context: Context) : GoogleApiClient.ConnectionCallbacks,
     GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
@@ -43,6 +50,7 @@ class TrackTrace(context: Context) : GoogleApiClient.ConnectionCallbacks,
         initial(context)
         dao = TripRepository(context)
         mFusedLocationClient = FusedLocationProviderClient(context)
+
     }
 
     private fun initial(context: Context){
@@ -62,7 +70,27 @@ class TrackTrace(context: Context) : GoogleApiClient.ConnectionCallbacks,
         Log.i("faileddd", "")
     }
 
+    @SuppressLint("MissingPermission")
     override fun onConnected(p0: Bundle?) {
+
+        val status = locationManager.getGpsStatus(null)
+        val satellites: Iterable<GpsSatellite> = status!!.satellites
+
+        val satI = satellites.iterator()
+
+        val maxSatellites: Int = status.getMaxSatellites()
+
+        for (item in status.satellites) {
+           Log.i("[[[[[[", item.snr.toString())
+        }
+//        status.apply { gpsStatus -> Log.i("xx3c", gpsStatus.toString())}
+//
+//        locationManager.registerGnssStatusCallback(T())
+//        var b = locationManager.getGpsStatus(null)!!.satellites.first {}
+//        Log.i("sc3w", b.toString())
+//        locationManager.getGpsStatus(null)!!.getTimeToFirstFix()
+
+        getNetworkStrength()
         getLocation()
         mFusedLocationClient.lastLocation.addOnSuccessListener {
             getLocation(context)
@@ -71,9 +99,9 @@ class TrackTrace(context: Context) : GoogleApiClient.ConnectionCallbacks,
         Log.i("connceter", "")
 
         CoroutineScope(Dispatchers.IO).launch {
-            Log.i("coroutiness","")
 
-            var p = dao.getAllTrip()
+            Log.i("coroutiness","")
+            val p = dao.getAllTrip()
             for (trip in p){
                 Log.i("ssssss2222", trip.id.toString())
             }
@@ -101,12 +129,9 @@ class TrackTrace(context: Context) : GoogleApiClient.ConnectionCallbacks,
 
     override fun onLocationChanged(p0: android.location.Location?) {
 
+
         calculateDistance(latitude, longitude, p0!!.longitude, p0.latitude)
 
-        Log.i("accurccj", p0?.getAccuracy().toString())
-        Log.i("speeddd", p0?.speed.toString())
-        Log.i("prrr", p0?.provider.toString())
-        Log.i("pccc", p0?.getSpeed().toString())
         Log.i("tatatacx", p0?.getAccuracy().toString() + " " + p0?.latitude.toString() + " " + p0?.longitude.toString())
 
         val data = dao.getAllTrip()
@@ -145,6 +170,172 @@ class TrackTrace(context: Context) : GoogleApiClient.ConnectionCallbacks,
         }
     }
 
+
+    fun getRegisteredCellInfo(cellInfos: MutableList<CellInfo>): ArrayList<CellInfo> {
+        val registeredCellInfos = ArrayList<CellInfo>()
+        if (cellInfos.isNotEmpty()) {
+            for (i in cellInfos.indices) {
+                if (cellInfos[i].isRegistered) {
+                    registeredCellInfos.add(cellInfos[i])
+                }
+            }
+        }
+        return registeredCellInfos
     }
 
+    fun getNetworkStrength() {
+
+        var strength1 = -1
+        var strength2 = -1
+
+        val manager =  context.getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE) as SubscriptionManager
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+            val telephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+
+            if (ActivityCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+
+                return
+            }
+            if (telephonyManager.allCellInfo != null) {
+
+                val allCellinfo = telephonyManager.allCellInfo
+                val activeSubscriptionInfoList = manager.activeSubscriptionInfoList
+
+                val regCellInfo= getRegisteredCellInfo(allCellinfo)
+
+
+                activeSubscriptionInfoList.forEachIndexed { Subindex, subs ->
+
+                    if (activeSubscriptionInfoList.size >= 2) {
+
+                        if (regCellInfo.size >= 2) {
+
+                            if (subs.simSlotIndex == 0) {
+
+                                if (subs.carrierName != "No service") {
+
+
+                                    strength1 = when (val info1 = regCellInfo[0]) {
+                                        is CellInfoLte -> info1.cellSignalStrength.dbm
+                                        is CellInfoGsm -> info1.cellSignalStrength.dbm
+                                        is CellInfoCdma -> info1.cellSignalStrength.dbm
+                                        is CellInfoWcdma -> info1.cellSignalStrength.dbm
+                                        else -> 0
+                                    }
+
+
+                                } else {
+
+                                    strength1 = -1
+                                }
+
+                            } else if (subs.simSlotIndex == 1) {
+
+                                if (subs.carrierName != "No service") {
+
+                                    strength2 = when (val info2 = regCellInfo[1]) {
+                                        is CellInfoLte -> info2.cellSignalStrength.dbm
+                                        is CellInfoGsm -> info2.cellSignalStrength.dbm
+                                        is CellInfoCdma -> info2.cellSignalStrength.dbm
+                                        is CellInfoWcdma -> info2.cellSignalStrength.dbm
+                                        else -> 0
+                                    }
+
+                                    Log.i("sim2", subs.carrierName.toString())
+                                } else {
+
+                                    strength2 = -1
+                                }
+
+                            }
+
+                        }
+                    }else if(activeSubscriptionInfoList.size == 1)
+                    {
+
+                        if(regCellInfo.size >= 1) {
+
+                            if (subs.simSlotIndex == 0) {
+
+                                if (subs.carrierName != "No service") {
+
+
+                                    strength1 = when (val info1 = regCellInfo[0]) {
+                                        is CellInfoLte -> info1.cellSignalStrength.level
+                                        is CellInfoGsm -> info1.cellSignalStrength.level
+                                        is CellInfoCdma -> info1.cellSignalStrength.level
+                                        is CellInfoWcdma -> info1.cellSignalStrength.level
+                                        else -> 0
+                                    }
+
+                                    Log.i("subsccc",  subs.toString())
+
+//                                    Timber.i("sim1   ${subs.carrierName}  ${subs.mnc}  $strength1")
+                                } else {
+
+                                    strength1 = -1
+                                }
+
+                            }
+                        }
+
+                        strength2 = -2
+
+                    }
+                }
+
+            }
+        }
+
+        Log.i("final strenght ",  strength1.toString())
+
+    }
+
+    }
+
+@RequiresApi(Build.VERSION_CODES.N)
+open class T : GnssStatus.Callback() {
+
+    override fun onStarted() {
+
+        super.onStarted()
+        Log.i("dxc", "")
+
+    }
+
+    override fun onStopped() {
+        super.onStopped()
+    }
+
+    override fun onFirstFix(ttffMillis: Int) {
+        super.onFirstFix(ttffMillis)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    override fun onSatelliteStatusChanged(status: GnssStatus) {
+        super.onSatelliteStatusChanged(status)
+
+        Log.i("xxcw26", status.satelliteCount.toString())
+
+        rt(status.satelliteCount, status)
+    }
+
+    fun rt(fl: Int, status: GnssStatus){
+
+        for (i in 0 until fl){
+
+            Log.i("scx", status.getAzimuthDegrees(i).toString())
+            Log.i("scx2", status.getConstellationType(i).toString())
+
+        }
+
+    }
+
+}
 

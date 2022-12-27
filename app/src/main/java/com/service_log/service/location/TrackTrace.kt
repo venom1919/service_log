@@ -21,6 +21,7 @@ import com.google.android.gms.location.*
 import com.google.android.gms.location.LocationListener
 import com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY
 import com.service_log.repository.TripRepository
+import java.text.DecimalFormat
 
 
 @RequiresApi(Build.VERSION_CODES.S)
@@ -41,19 +42,17 @@ class TrackTrace(context: Context) : GoogleApiClient.ConnectionCallbacks,
 
     var mLocationRequest = LocationRequest()
     var context: Context
-    var latitude = 0.0
-    var longitude = 0.0
+    var startLatitude = 0.0
+    var startLongitude = 0.0
 
     private var locationManager = context.getSystemService(LOCATION_SERVICE) as LocationManager
     private var mFusedLocationClient: FusedLocationProviderClient
 
     init {
-
         this.context = context
-//        initial(context)
+        initial(context)
         getLocationUpdates()
         startLocationUpdates(context)
-        //////
 
         fusedLocationClient2 = FusedLocationProviderClient(context)
 
@@ -121,10 +120,12 @@ class TrackTrace(context: Context) : GoogleApiClient.ConnectionCallbacks,
             .addApi(LocationServices.API)
             .build()
 
-        mLocationRequest.interval = 10000
-        mLocationRequest.fastestInterval = 0
+
+        mLocationRequest.interval = 50000
+        mLocationRequest.fastestInterval = 5000
         mLocationRequest.priority = priority
         mLocationClient.connect()
+
     }
 
     override fun onConnectionFailed(p0: ConnectionResult) {
@@ -134,8 +135,7 @@ class TrackTrace(context: Context) : GoogleApiClient.ConnectionCallbacks,
     @SuppressLint("MissingPermission")
     override fun onConnected(p0: Bundle?) {
 
-
-        Log.i("Conecteded" , "")
+        Log.i("Conecteded", "")
         locationManager.registerGnssStatusCallback(T())
 
 //        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 1F, (LocationListener {
@@ -168,10 +168,12 @@ class TrackTrace(context: Context) : GoogleApiClient.ConnectionCallbacks,
 
     override fun onLocationChanged(p0: android.location.Location?) {
 
+        var startLat = p0!!.latitude
+        var startLong = p0.longitude
 
-        calculateDistance(latitude, longitude, p0!!.longitude, p0.latitude)
+        calculateDistance(p0!!.longitude, p0.latitude)
 
-        Log.i("tatatacx", p0?.getAccuracy().toString() + " " + p0?.latitude.toString() + " " + p0?.longitude.toString())
+        Log.i("tatatacx", p0.getAccuracy().toString() + " " + p0.latitude.toString() + " " + p0.longitude.toString())
 
         val data = dao.getAllTrip()
         data.forEach {
@@ -183,21 +185,46 @@ class TrackTrace(context: Context) : GoogleApiClient.ConnectionCallbacks,
         return false
     }
 
-    private fun calculateDistance(lat:Double, lon:Double, lat2:Double, lon2:Double ){
+    private fun calculateDistance(endLat:Double, endLon:Double ){
 
-        val R = 6371; // km
-        val dLat = (lat-lat)
-        val dLon = (lon-lon)
-        val a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                Math.cos(lat) * Math.cos(lat) *
-                Math.sin(dLon/2) * Math.sin(dLon/2)
-        val c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
-        val d = R * c
+        val radius = 6371
 
-        Log.i("sssxc", d.toString())
+        val lat1: Double = startLatitude
+        val lat2: Double = endLat
+        val lon1: Double = startLongitude
+        val lon2: Double = endLon
+        val dLat = Math.toRadians(lat2 - lat1)
+        val dLon = Math.toRadians(lon2 - lon1)
+        val a = (Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                + (Math.cos(Math.toRadians(lat1))
+                * Math.cos(Math.toRadians(lat2)) * Math.sin(dLon / 2)
+                * Math.sin(dLon / 2)))
+        val c = 2 * Math.asin(Math.sqrt(a))
+        val valueResult = radius * c
+        val km = valueResult / 1
+        val newFormat = DecimalFormat("####")
+        val kmInDec: Int = Integer.valueOf(newFormat.format(km))
+        val meter = valueResult % 1000
+        val meterInDec: Int = Integer.valueOf(newFormat.format(meter))
 
-        latitude = lat2
-        longitude = lon2
+        Log.i("Radius_alue", "" + valueResult + "   KM  " + kmInDec + " Meter   " + meterInDec + " " + endLat + " " + endLon + "df  " + radius * c)
+
+        startLatitude = endLat
+        startLongitude = endLon
+
+//        val R = 6371; // km
+//        val dLat = (lat-lat)
+//        val dLon = (lon-lon)
+//        val a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+//                Math.cos(lat) * Math.cos(lat) *
+//                Math.sin(dLon/2) * Math.sin(dLon/2)
+//        val c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
+//        val d = R * c
+//
+//
+//
+//        latitude = lat2
+//        longitude = lon2
 
     }
 

@@ -4,7 +4,7 @@ object GlobalAccess {
 
 //    const val URL = "https://tsd.taburetka.ua/dev_oleg/hs/tsd/"
 
-    const val URL = "https://192.168.10.34/dev_oleg/hs/tsd/"
+    const val URL = "https://tsd.taburetka.ua/dev_oleg/hs/tsd/"
     const val PORT = 443
     const val CONTENT_TYPE = "application/json"
     const val LOGIN = "tsd.taburetka.ua"

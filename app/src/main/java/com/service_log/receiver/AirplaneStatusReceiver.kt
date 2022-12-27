@@ -21,6 +21,5 @@ class AirplaneStatusReceiver : BroadcastReceiver() {
         dao = TripRepository(p0!!)
         dao.insertTrip(Trip(imei = AssignmentHelper.retrieveReceiverInfoByIMEI(p0), type = TypeEvent.AIRPLANE_MODE, details = AssignmentHelper.retrieveReceiverINFOByAirplaneStatus(p0), date = AssignmentHelper.retrieveDateFORMATTER()))
 
-
     }
 }

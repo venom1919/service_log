@@ -1,9 +1,7 @@
 package com.service_log.api
 
-import com.service_log.constant.GlobalAccess
 import com.service_log.model.PostsResponse
 import com.service_log.model.Trip
-import com.squareup.moshi.Json
 import retrofit2.http.*
 
 interface RetrofitApi {
@@ -18,12 +16,12 @@ interface RetrofitApi {
                  @Header("Authorization") Authorization:String
                  ): retrofit2.Call<PostsResponse>
 
-    @POST("WriteInfoByTrip")
-    fun test(@Header("Authorization") Authorization: String,
+    @POST("PostInfoByTrip")
+    fun sendData1cServer(@Header("Authorization") Authorization: String,
              @Header("Access-Token") accessToken:String,
              @Header("auth-token") authToken:String,
              @Header("Accept") Accept:String,
-             @Header("Content-Type") Content_Type :String,
+             @Header("Content-Type") Content_Type: String,
              @Body details:ArrayList<Trip>
              ): retrofit2.Call<PostsResponse>
 

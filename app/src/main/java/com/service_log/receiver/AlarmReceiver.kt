@@ -7,7 +7,6 @@ import android.content.Intent
 import android.util.Log
 import com.service_log.api.ApiService
 import com.service_log.constant.GlobalAccess
-import com.service_log.enums.TypeEvent
 import com.service_log.model.PostsResponse
 import com.service_log.model.Trip
 import com.service_log.repository.TripRepository
@@ -15,15 +14,11 @@ import okhttp3.Credentials
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.collections.ArrayList
 
 class AlarmReceiver: BroadcastReceiver() {
 
     private lateinit var dao: TripRepository
-    lateinit var retrofitClient: ApiService
+    private lateinit var retrofitClient: ApiService
 
     @SuppressLint("SimpleDateFormat")
     override fun onReceive(p0: Context?, p1: Intent?) {
@@ -31,34 +26,31 @@ class AlarmReceiver: BroadcastReceiver() {
         dao = TripRepository(p0!!)
         retrofitClient = ApiService()
 
-        val trip = Trip(imei = "xx2343", type = TypeEvent.LOCATION , details = "xcx", date ="3423")
         val tripDetails = getDataForServer1c()
 
-        tripDetails.forEach { e -> Log.i("xxxx23", e.details)}
+        if (tripDetails.isEmpty())
+            return
 
-        retrofitClient.retrofitPost().test2(Credentials.basic(GlobalAccess.LOGIN, GlobalAccess.PASSW),
+        tripDetails.forEach {e -> Log.i("xxxx23", e.id.toString())}
+
+        retrofitClient.retrofitPost().sendData1cServer(Credentials.basic(GlobalAccess.LOGIN, GlobalAccess.PASSW),
             GlobalAccess.ACCESS_TOKEN, GlobalAccess.AUTH_TOKEN, GlobalAccess.ACCEPT, GlobalAccess.CONTENT_TYPE,
-            trip
+              tripDetails as ArrayList<Trip>
         ).enqueue(object :
             Callback<PostsResponse>{
 
             override fun onFailure(call: Call<PostsResponse>, t: Throwable) {
-               Log.i("dont send json", call.isExecuted.toString())
-                Log.i("xxxxxxc", call.isExecuted.toString())
-                Log.i("ccwr", t.message.toString())
-                Log.i("tyt", t.printStackTrace().toString())
-                Log.i("3w43", t.cause?.message.toString())
                 Log.i("poiyt", t.toString())
-
+                Log.i("ccer4", call.request().toString())
             }
 
             override fun onResponse(call: Call<PostsResponse>, response: Response<PostsResponse>) {
-//              var code = response.code().toString()
 
-                Log.i("sssq233", response.body().toString())
-                Log.i("codeeee" , response.code().toString())
-                Log.i("codeefdxc" , response.raw().toString())
-
+                if (response.code() == 200){
+                    val listId = ArrayList<Int>()
+                    tripDetails.forEach {e -> e.id?.let { listId.add(it)}}
+                    deleteDataIfStatusOk(listId)
+                }
             }
 
             })
@@ -69,7 +61,7 @@ class AlarmReceiver: BroadcastReceiver() {
          return dao.getAllTrip()
     }
 
-    fun deleteDataIfStatusOk(dao: TripRepository, list: List<Int>){
+    fun deleteDataIfStatusOk(list: List<Int>){
         dao.deleteTrips(list)
     }
 

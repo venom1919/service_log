@@ -9,9 +9,10 @@ import android.provider.Settings
 import android.telephony.TelephonyManager
 import androidx.annotation.RequiresApi
 import com.service_log.enums.TypeEvent
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import java.text.SimpleDateFormat
+import java.util.*
 
+@Suppress("UNUSED_EXPRESSION")
 class AssignmentHelper {
 
     companion object {
@@ -48,23 +49,24 @@ class AssignmentHelper {
         }
 
         fun retrieveDETAILS(typeEvent: TypeEvent): String{
+
             when(typeEvent){
-                TypeEvent.REBOOT ->{ "phone was reboot"}
-                TypeEvent.LOCATION -> "Location is"
-                TypeEvent.AIRPLANE_MODE -> "user power AIRPLANE_MODE"
-                TypeEvent.BATTERY_CHANGE -> "balance battery"
-                TypeEvent.CHANGE_STATE_1C -> "1c was closed"
-                TypeEvent.LOCATION_BUTTON_OFF -> "user turned off location. GPS don't work"
-                TypeEvent.LOCATION_BUTTON_ON -> "user turned on location. GPS work"
-                TypeEvent.POWER_ON -> "phone was turned on!!!!"
+                TypeEvent.REBOOT -> return "phone was reboot"
+                TypeEvent.LOCATION -> return "Location is"
+                TypeEvent.AIRPLANE_MODE -> return "user power AIRPLANE_MODE"
+                TypeEvent.BATTERY_CHANGE -> return "balance battery"
+                TypeEvent.CHANGE_STATE_1C -> return "1c was closed"
+                TypeEvent.LOCATION_BUTTON_OFF -> return "user turned off location.GPS don't work"
+                TypeEvent.LOCATION_BUTTON_ON -> return "user turned on location.GPS work"
+                TypeEvent.POWER_ON -> return "phone was turned on!!!!"
             }
             return ""
         }
 
+        @SuppressLint("SimpleDateFormat")
         @RequiresApi(Build.VERSION_CODES.O)
-        fun retrieveDateFORMATTER(): String{
-            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
-            return LocalDateTime.now().format(formatter)
+        fun retrieveDateFORMATTER(): String {
+            return SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())
         }
     }
 }

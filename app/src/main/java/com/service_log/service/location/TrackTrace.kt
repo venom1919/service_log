@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Context.LOCATION_SERVICE
 import android.content.pm.PackageManager
 import android.location.GnssStatus
-import android.location.GpsSatellite
 import android.location.Location
 import android.location.LocationManager
 import android.os.Build
@@ -18,21 +17,24 @@ import androidx.constraintlayout.motion.widget.Debug.getLocation
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
-import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.*
 import com.google.android.gms.location.LocationListener
-import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY
-import com.google.android.gms.location.LocationServices
 import com.service_log.repository.TripRepository
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 
 @RequiresApi(Build.VERSION_CODES.S)
 class TrackTrace(context: Context) : GoogleApiClient.ConnectionCallbacks,
     GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
+    private var fusedLocationClient2: FusedLocationProviderClient
+
+    // globally declare LocationRequest
+    private lateinit var locationRequest: LocationRequest
+    // globally declare LocationCallback
+    private lateinit var locationCallback: LocationCallback
+
+    ///////////////////2
     private var dao: TripRepository
     lateinit var mLocationClient: GoogleApiClient
     private val priority = PRIORITY_HIGH_ACCURACY
@@ -46,12 +48,71 @@ class TrackTrace(context: Context) : GoogleApiClient.ConnectionCallbacks,
     private var mFusedLocationClient: FusedLocationProviderClient
 
     init {
+
         this.context = context
-        initial(context)
+//        initial(context)
+        getLocationUpdates()
+        startLocationUpdates(context)
+        //////
+
+        fusedLocationClient2 = FusedLocationProviderClient(context)
+
         dao = TripRepository(context)
         mFusedLocationClient = FusedLocationProviderClient(context)
 
     }
+
+    private fun getLocationUpdates()
+    {
+
+        fusedLocationClient2 = LocationServices.getFusedLocationProviderClient(context!!)
+        locationRequest = LocationRequest()
+        locationRequest.interval = 0
+        locationRequest.fastestInterval = 0
+//        locationRequest.smallestDisplacement = 170f // 170 m = 0.1 mile
+        locationRequest.priority = PRIORITY_HIGH_ACCURACY
+
+        locationCallback = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult?) {
+                locationResult ?: return
+
+                if (locationResult.locations.isNotEmpty()) {
+
+                    Log.i("lastposss", locationResult.lastLocation.longitude.toString() + " " + locationResult.lastLocation.latitude.toString() )
+
+                    val location =
+                        locationResult.lastLocation
+                 }
+
+
+            }
+        }
+    }
+
+    //start location updates
+    private fun startLocationUpdates(context: Context) {
+        if (ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+        fusedLocationClient2.requestLocationUpdates(
+            locationRequest,
+            locationCallback,
+            null /* Looper */
+        )
+    }
+
+    // stop location updates
+    private fun stopLocationUpdates() {
+        fusedLocationClient2.removeLocationUpdates(locationCallback)
+    }
+
 
     private fun initial(context: Context){
         mLocationClient = GoogleApiClient.Builder(context)
@@ -73,39 +134,17 @@ class TrackTrace(context: Context) : GoogleApiClient.ConnectionCallbacks,
     @SuppressLint("MissingPermission")
     override fun onConnected(p0: Bundle?) {
 
-        val status = locationManager.getGpsStatus(null)
-        val satellites: Iterable<GpsSatellite> = status!!.satellites
 
-        val satI = satellites.iterator()
+        Log.i("Conecteded" , "")
+        locationManager.registerGnssStatusCallback(T())
 
-        val maxSatellites: Int = status.getMaxSatellites()
-
-        for (item in status.satellites) {
-           Log.i("[[[[[[", item.snr.toString())
-        }
-//        status.apply { gpsStatus -> Log.i("xx3c", gpsStatus.toString())}
+//        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 1F, (LocationListener {
+//        }){
 //
-//        locationManager.registerGnssStatusCallback(T())
-//        var b = locationManager.getGpsStatus(null)!!.satellites.first {}
-//        Log.i("sc3w", b.toString())
-//        locationManager.getGpsStatus(null)!!.getTimeToFirstFix()
+//        })
 
         getNetworkStrength()
         getLocation()
-        mFusedLocationClient.lastLocation.addOnSuccessListener {
-            getLocation(context)
-        }
-
-        Log.i("connceter", "")
-
-        CoroutineScope(Dispatchers.IO).launch {
-
-            Log.i("coroutiness","")
-            val p = dao.getAllTrip()
-            for (trip in p){
-                Log.i("ssssss2222", trip.id.toString())
-            }
-        }
 
         if (ActivityCompat.checkSelfPermission(
                 context,
@@ -292,12 +331,10 @@ class TrackTrace(context: Context) : GoogleApiClient.ConnectionCallbacks,
 
             }
         }
-
         Log.i("final strenght ",  strength1.toString())
-
+    }
     }
 
-    }
 
 @RequiresApi(Build.VERSION_CODES.N)
 open class T : GnssStatus.Callback() {
@@ -324,18 +361,23 @@ open class T : GnssStatus.Callback() {
         Log.i("xxcw26", status.satelliteCount.toString())
 
         rt(status.satelliteCount, status)
+
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun rt(fl: Int, status: GnssStatus){
 
         for (i in 0 until fl){
+            if (status.getCn0DbHz(i) > 0){
+                Log.i("scxШУм", status.getCn0DbHz(i).toString() + " " +  status.getSvid(i))
 
-            Log.i("scx", status.getAzimuthDegrees(i).toString())
-            Log.i("scx2", status.getConstellationType(i).toString())
-
+            }
+            Log.i("lktr", status.getAzimuthDegrees(i).toString())
         }
 
     }
+
+
 
 }
 

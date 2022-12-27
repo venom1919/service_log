@@ -25,34 +25,37 @@ class AssignmentHelper {
 
         @SuppressLint("ServiceCast")
         fun retrieveReceiverINFOByLocationButton(context: Context): Boolean{
-            val locationManager = context?.getSystemService(Context.LOCATION_SERVICE) as
+            val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as
                     LocationManager
             return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
         }
 
         @SuppressLint("ServiceCast")
-        fun retrieveReceiverINFOByAirplaneStatus(context: Context): Boolean{
+        fun retrieveReceiverINFOByAirplaneStatus(context: Context): String{
+
             val res = Settings.Global.getString(context.contentResolver, Settings.Global.AIRPLANE_MODE_ON).toInt()
-            return res > 0
+            return if (res > 0)
+                "On"
+            else
+                "Off"
         }
 
-
         @SuppressLint("ServiceCast")
-        fun retrieveReceiverINFOByBattery(context: Context): Int{
-            val batteryManager = context?.getSystemService(Context.BATTERY_SERVICE) as
+        fun retrieveReceiverINFOByBattery(context: Context): String {
+            val batteryManager = context.getSystemService(Context.BATTERY_SERVICE) as
                     BatteryManager
-            return batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
+            return batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY).toString()
         }
 
         fun retrieveDETAILS(typeEvent: TypeEvent): String{
             when(typeEvent){
                 TypeEvent.REBOOT ->{ "phone was reboot"}
-                TypeEvent.LOCATION -> ""
+                TypeEvent.LOCATION -> "Location is"
                 TypeEvent.AIRPLANE_MODE -> "user power AIRPLANE_MODE"
                 TypeEvent.BATTERY_CHANGE -> "balance battery"
                 TypeEvent.CHANGE_STATE_1C -> "1c was closed"
                 TypeEvent.LOCATION_BUTTON_OFF -> "user turned off location. GPS don't work"
-                TypeEvent.LOCATION_BUTTON_ON -> ""
+                TypeEvent.LOCATION_BUTTON_ON -> "user turned on location. GPS work"
                 TypeEvent.POWER_ON -> "phone was turned on!!!!"
             }
             return ""

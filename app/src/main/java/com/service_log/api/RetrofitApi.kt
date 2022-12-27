@@ -24,8 +24,18 @@ interface RetrofitApi {
              @Header("auth-token") authToken:String,
              @Header("Accept") Accept:String,
              @Header("Content-Type") Content_Type :String,
-             @Body details:Trip
+             @Body details:ArrayList<Trip>
              ): retrofit2.Call<PostsResponse>
+
+    @POST("WriteLogsTSD")
+    fun test2(@Header("Authorization") Authorization: String,
+             @Header("Access-Token") accessToken:String,
+             @Header("auth-token") authToken:String,
+             @Header("Accept") Accept:String,
+             @Header("Content-Type") Content_Type :String,
+             @Body details:Trip
+    ): retrofit2.Call<PostsResponse>
+
 
     @Headers()
     @POST("WriteInfoByTrip")

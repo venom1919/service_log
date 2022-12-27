@@ -11,6 +11,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
+import androidx.annotation.RequiresApi
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -38,6 +39,7 @@ class GeneralService : Service(), GoogleApiClient.OnConnectionFailedListener  {
     lateinit var apiClient: GoogleApiClient
     lateinit var trackTrace:TrackTrace
 
+    @RequiresApi(Build.VERSION_CODES.S)
     @SuppressLint("ObsoleteSdkInt")
     override fun onCreate() {
 
@@ -127,7 +129,7 @@ class GeneralService : Service(), GoogleApiClient.OnConnectionFailedListener  {
     @SuppressLint("UnspecifiedImmutableFlag")
     fun writeData(){
 
-        retrofitInstance = ApiService()
+//        retrofitInstance = ApiService()
 
         val receiver = Intent(this, AlarmReceiver::class.java)
         val pendingIntent = PendingIntent.getBroadcast(this, 0, receiver, 0)
@@ -147,7 +149,7 @@ class GeneralService : Service(), GoogleApiClient.OnConnectionFailedListener  {
         }
 
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(Runnable {
-            getLocation(this)
+//            getLocation(this)
             Log.i("Jobss", "yes")
         }, 0, 3, TimeUnit.SECONDS)
     }

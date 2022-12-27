@@ -15,20 +15,15 @@ class TripRepository(context: Context) {
         return db.getAllTrip()
     }
 
-    // Insert new user
+    // Insert new trip
     fun insertTrip(users: Trip) {
         insertAsyncTask(db).execute(users)
     }
 
-   /* // update user
-    fun updateUser(users: Users) {
-        db.updateUser(users)
+    // Delete trips
+    fun deleteTrips(list: List<Int>) {
+        db.deleteDataId(list)
     }
-
-    // Delete user
-    fun deleteUser(users: Users) {
-        db.deleteUser(users)
-    }*/
 
     private class insertAsyncTask internal constructor(private val tripDao: TripDao) :
         AsyncTask<Trip, Void, Void>() {

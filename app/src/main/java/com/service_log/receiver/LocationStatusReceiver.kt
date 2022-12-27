@@ -4,16 +4,31 @@ import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.telephony.TelephonyManager
-import android.util.Log
+import android.os.Build
+import androidx.annotation.RequiresApi
+import com.service_log.enums.TypeEvent
+import com.service_log.model.Trip
+import com.service_log.repository.TripRepository
 import com.service_log.service.static.AssignmentHelper
-import kotlin.math.log
 
 class LocationStatusReceiver : BroadcastReceiver() {
 
+    private lateinit var dao: TripRepository
+
+    @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("ServiceCast")
     override fun onReceive(p0: Context?, p1: Intent?) {
-        Log.i("sxcxcxc",  AssignmentHelper.retrieveReceiverINFOByLocationButton(p0!!).toString())
+
+        val locationStatus = AssignmentHelper.retrieveReceiverINFOByLocationButton(p0!!)
+
+        val onOrOff: String = if (locationStatus){
+            AssignmentHelper.retrieveDETAILS(TypeEvent.LOCATION_BUTTON_ON)
+        }else{
+            AssignmentHelper.retrieveDETAILS(TypeEvent.LOCATION_BUTTON_OFF)
+        }
+
+        dao = TripRepository(p0)
+        dao.insertTrip(Trip(imei = AssignmentHelper.retrieveReceiverInfoByIMEI(p0), type = if (locationStatus) TypeEvent.LOCATION_BUTTON_ON else TypeEvent.LOCATION_BUTTON_OFF, details = onOrOff, date = AssignmentHelper.retrieveDateFORMATTER()))
 
     }
 }

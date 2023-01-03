@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import com.service_log.api.ApiService
 import com.service_log.constant.GlobalAccess
 import com.service_log.model.PostsResponse
@@ -30,33 +29,22 @@ class AlarmReceiver: BroadcastReceiver() {
 
         if (tripDetails.isEmpty())
             return
-
-        tripDetails.forEach {e -> Log.i("xxxx23", e.id.toString())}
-
         retrofitClient.retrofitPost().sendData1cServer(Credentials.basic(GlobalAccess.LOGIN, GlobalAccess.PASSW),
             GlobalAccess.ACCESS_TOKEN, GlobalAccess.AUTH_TOKEN, GlobalAccess.ACCEPT, GlobalAccess.CONTENT_TYPE,
               tripDetails as ArrayList<Trip>
         ).enqueue(object :
             Callback<PostsResponse>{
-
             override fun onFailure(call: Call<PostsResponse>, t: Throwable) {
-                Log.i("poiyt", t.toString())
-                Log.i("ccer4", call.request().toString())
             }
-
             override fun onResponse(call: Call<PostsResponse>, response: Response<PostsResponse>) {
-
                 if (response.code() == 200){
                     val listId = ArrayList<Int>()
                     tripDetails.forEach {e -> e.id?.let { listId.add(it)}}
                     deleteDataIfStatusOk(listId)
                 }
             }
-
             })
     }
-
-
     fun getDataForServer1c(): List<Trip> {
          return dao.getAllTrip()
     }
@@ -64,5 +52,4 @@ class AlarmReceiver: BroadcastReceiver() {
     fun deleteDataIfStatusOk(list: List<Int>){
         dao.deleteTrips(list)
     }
-
 }

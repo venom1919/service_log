@@ -1,5 +1,6 @@
 package com.service_log.service
 
+//noinspection SuspiciousImport
 import android.R
 import android.annotation.SuppressLint
 import android.app.AlarmManager
@@ -9,7 +10,6 @@ import android.app.Service
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
-import android.util.Log
 import androidx.annotation.RequiresApi
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
@@ -62,16 +62,16 @@ class GeneralService : Service(), GoogleApiClient.OnConnectionFailedListener  {
             100000,
             pendingIntent
         )
+
         runBlocking {
             launch(Dispatchers.Default) {}
         }
 
-        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(Runnable {
-            Log.i("Jobss", "yes")
+        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate({
         }, 0, 3, TimeUnit.SECONDS)
+
     }
 
     override fun onConnectionFailed(p0: ConnectionResult) {
-
     }
 }

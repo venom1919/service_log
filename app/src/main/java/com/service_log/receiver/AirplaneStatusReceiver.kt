@@ -1,5 +1,6 @@
 package com.service_log.receiver
 
+import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -15,6 +16,7 @@ class AirplaneStatusReceiver : BroadcastReceiver() {
 
     private lateinit var dao: TripRepository
 
+    @SuppressLint("UnsafeProtectedBroadcastReceiver")
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onReceive(p0: Context?, p1: Intent?) {
 

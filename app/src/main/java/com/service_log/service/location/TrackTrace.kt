@@ -100,7 +100,7 @@ class TrackTrace(context: Context) : GoogleApiClient.ConnectionCallbacks,
         if (!isGPSEnabled || !isNetworkEnabled){
 
             Log.i("falsesl", isGPSEnabled.toString() + " "+ isGPSEnabled)
-            dao.insertTrip(Trip(imei = imei, type = TypeEvent.LOCATION_BUTTON_OFF, details = "", date = AssignmentHelper.retrieveDateFORMATTER()))
+            dao.insertTrip(Trip(imei = imei, type = TypeEvent.LOCATION_BUTTON_OFF, details = "", date = AssignmentHelper.retrieveDateFORMATTER(), info = ""))
             return false
         }
 
@@ -244,7 +244,7 @@ class TrackTrace(context: Context) : GoogleApiClient.ConnectionCallbacks,
         val locationListener: android.location.LocationListener = object : android.location.LocationListener {
 
             override fun onLocationChanged(location: Location) {
-                dao.insertTrip(Trip(imei = imei, type = TypeEvent.LOCATION, details = location.latitude.toString() + " " + location.longitude.toString(), date = AssignmentHelper.retrieveDateFORMATTER()))
+                dao.insertTrip(Trip(imei = imei, type = TypeEvent.LOCATION, details = location.latitude.toString() + " " + location.longitude.toString(), date = AssignmentHelper.retrieveDateFORMATTER(), info = ""))
             }
 
             override fun onFlushComplete(requestCode: Int) {

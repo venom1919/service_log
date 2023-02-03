@@ -20,7 +20,7 @@ class RebootReceiver : BroadcastReceiver() {
     @SuppressLint("UnsafeProtectedBroadcastReceiver")
     override fun onReceive(p0: Context?, p1: Intent?) {
             dao = TripRepository(p0!!)
-            dao.insertTrip(Trip(imei = AssignmentHelper.retrieveReceiverInfoByIMEI(p0), type = TypeEvent.REBOOT, details = "phone was reboot", date = AssignmentHelper.retrieveDateFORMATTER()))
+            dao.insertTrip(Trip(imei = AssignmentHelper.retrieveReceiverInfoByIMEI(p0), type = TypeEvent.REBOOT, details = "phone was reboot", date = AssignmentHelper.retrieveDateFORMATTER(), info = ""))
             val i = Intent(p0, GeneralService::class.java)
             p0.startService(i)
     }

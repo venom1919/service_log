@@ -17,6 +17,6 @@ class BatteryChangedReceiver: BroadcastReceiver() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onReceive(p0: Context?, p1: Intent?) {
         dao = TripRepository(p0!!)
-        dao.insertTrip(Trip(imei = AssignmentHelper.retrieveReceiverInfoByIMEI(p0), type = TypeEvent.BATTERY_CHANGE, details = AssignmentHelper.retrieveReceiverINFOByBattery(p0), date = AssignmentHelper.retrieveDateFORMATTER()))
+        dao.insertTrip(Trip(imei = AssignmentHelper.retrieveReceiverInfoByIMEI(p0), type = TypeEvent.BATTERY_CHANGE, details = AssignmentHelper.retrieveReceiverINFOByBattery(p0), date = AssignmentHelper.retrieveDateFORMATTER(), info = ""))
     }
 }

@@ -22,7 +22,6 @@ interface TripDao {
     @Query("DELETE FROM Trip")
     fun deleteDataId()
 
-
 //    @Query("delete from trip where id in (:idList)")
 //    fun deleteDataId(idList: List<Int>)
 

@@ -21,7 +21,7 @@ class AirplaneStatusReceiver : BroadcastReceiver() {
     override fun onReceive(p0: Context?, p1: Intent?) {
 
         dao = TripRepository(p0!!)
-        dao.insertTrip(Trip(imei = AssignmentHelper.retrieveReceiverInfoByIMEI(p0), type = TypeEvent.AIRPLANE_MODE, details = AssignmentHelper.retrieveReceiverINFOByAirplaneStatus(p0), date = AssignmentHelper.retrieveDateFORMATTER()))
+        dao.insertTrip(Trip(imei = AssignmentHelper.retrieveReceiverInfoByIMEI(p0), type = TypeEvent.AIRPLANE_MODE, details = AssignmentHelper.retrieveReceiverINFOByAirplaneStatus(p0), date = AssignmentHelper.retrieveDateFORMATTER(), info = ""))
 
     }
 }

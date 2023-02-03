@@ -34,7 +34,7 @@ class LocationStatusReceiver : BroadcastReceiver() {
         }
 
         dao = TripRepository(p0)
-        dao.insertTrip(Trip(imei = AssignmentHelper.retrieveReceiverInfoByIMEI(p0), type = if (locationStatus) TypeEvent.LOCATION_BUTTON_ON else TypeEvent.LOCATION_BUTTON_OFF, details = onOrOff, date = AssignmentHelper.retrieveDateFORMATTER()))
+        dao.insertTrip(Trip(imei = AssignmentHelper.retrieveReceiverInfoByIMEI(p0), type = if (locationStatus) TypeEvent.LOCATION_BUTTON_ON else TypeEvent.LOCATION_BUTTON_OFF, details = onOrOff, date = AssignmentHelper.retrieveDateFORMATTER(), info = ""))
 
     }
 }

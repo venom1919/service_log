@@ -20,7 +20,7 @@ class LocationReceiver : BroadcastReceiver() {
     override fun onReceive(p0: Context?, p1: Intent?) {
 
         dao = TripRepository(p0!!)
-        dao.insertTrip(Trip(imei = AssignmentHelper.retrieveReceiverInfoByIMEI(p0), type = TypeEvent.LOCATION, details = "", date = AssignmentHelper.retrieveDateFORMATTER()))
+        dao.insertTrip(Trip(imei = AssignmentHelper.retrieveReceiverInfoByIMEI(p0), type = TypeEvent.LOCATION, details = "", date = AssignmentHelper.retrieveDateFORMATTER(), info = ""))
 
 
 

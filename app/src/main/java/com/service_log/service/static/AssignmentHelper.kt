@@ -11,6 +11,7 @@ import androidx.annotation.RequiresApi
 import com.service_log.enums.TypeEvent
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.HashMap
 
 @Suppress("UNUSED_EXPRESSION")
 class AssignmentHelper {
@@ -19,7 +20,7 @@ class AssignmentHelper {
 
         @SuppressLint("ServiceCast")
         fun retrieveReceiverInfoByIMEI(context: Context): String{
-            val telephonyManager = context?.getSystemService(Context.TELEPHONY_SERVICE) as
+            val telephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE) as
                     TelephonyManager
             return telephonyManager.deviceId
         }
@@ -63,10 +64,18 @@ class AssignmentHelper {
             return ""
         }
 
+        @SuppressLint("ServiceCast")
+        fun retrieveDataAbout1c(context: Context): kotlin.collections.HashMap<String, Boolean> {
+            val hashMap:HashMap<String, Boolean> = HashMap<String, Boolean>()
+            hashMap.put("", true)
+            return hashMap
+        }
+
         @SuppressLint("SimpleDateFormat")
         @RequiresApi(Build.VERSION_CODES.O)
         fun retrieveDateFORMATTER(): String {
-            return SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())
+//            return SimpleDateFormat("").format(Date())
+            return SimpleDateFormat("dd.MM.yyyy HH:mm:ss").format(Date())
         }
     }
 }

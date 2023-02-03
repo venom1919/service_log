@@ -5,6 +5,9 @@ import android.os.AsyncTask
 import com.service_log.dao.TripDao
 import com.service_log.db.BuilderDB
 import com.service_log.model.Trip
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class TripRepository(context: Context) {
 
@@ -22,7 +25,7 @@ class TripRepository(context: Context) {
 
     // Delete trips
     fun deleteTrips(list: List<Int>) {
-        db.deleteDataId(list)
+        db.deleteDataId()
     }
 
     private class insertAsyncTask internal constructor(private val tripDao: TripDao) :
@@ -33,6 +36,5 @@ class TripRepository(context: Context) {
             return null
         }
     }
-
 
 }

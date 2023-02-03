@@ -4,11 +4,15 @@ import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import com.service_log.api.ApiService
 import com.service_log.constant.GlobalAccess
 import com.service_log.model.PostsResponse
 import com.service_log.model.Trip
 import com.service_log.repository.TripRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import okhttp3.Credentials
 import retrofit2.Call
 import retrofit2.Callback
@@ -27,6 +31,13 @@ class AlarmReceiver: BroadcastReceiver() {
 
         val tripDetails = getDataForServer1c()
 
+        tripDetails.forEach {e -> Log.i("wwwwd", e.id.toString())}
+
+        val listId = ArrayList<Int>()
+        tripDetails.forEach {e -> e.id?.let { listId.add(it)}}
+        deleteDataIfStatusOk(listId)
+
+
         if (tripDetails.isEmpty())
             return
         retrofitClient.retrofitPost().sendData1cServer(Credentials.basic(GlobalAccess.LOGIN, GlobalAccess.PASSW),
@@ -35,9 +46,12 @@ class AlarmReceiver: BroadcastReceiver() {
         ).enqueue(object :
             Callback<PostsResponse>{
             override fun onFailure(call: Call<PostsResponse>, t: Throwable) {
+                t.message?.let { Log.i("errror", it) }
             }
             override fun onResponse(call: Call<PostsResponse>, response: Response<PostsResponse>) {
                 if (response.code() == 200){
+                    Log.i("okeye", "")
+
                     val listId = ArrayList<Int>()
                     tripDetails.forEach {e -> e.id?.let { listId.add(it)}}
                     deleteDataIfStatusOk(listId)
@@ -52,4 +66,6 @@ class AlarmReceiver: BroadcastReceiver() {
     fun deleteDataIfStatusOk(list: List<Int>){
         dao.deleteTrips(list)
     }
+
+
 }

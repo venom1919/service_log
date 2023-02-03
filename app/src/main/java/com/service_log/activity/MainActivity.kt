@@ -4,15 +4,11 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.gms.common.api.GoogleApiClient
-import com.google.android.gms.location.LocationRequest
 import com.service_log.R
 import com.service_log.service.GeneralService
 
-open class MainActivity: AppCompatActivity(){
 
-    lateinit var mLocationClient: GoogleApiClient
-    var mLocationRequest = LocationRequest()
+open class MainActivity: AppCompatActivity(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
 

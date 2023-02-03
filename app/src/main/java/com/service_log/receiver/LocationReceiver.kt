@@ -4,10 +4,12 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import com.service_log.enums.TypeEvent
 import com.service_log.model.Trip
 import com.service_log.repository.TripRepository
+import com.service_log.service.location.TrackTrace
 import com.service_log.service.static.AssignmentHelper
 
 class LocationReceiver : BroadcastReceiver() {
@@ -19,6 +21,8 @@ class LocationReceiver : BroadcastReceiver() {
 
         dao = TripRepository(p0!!)
         dao.insertTrip(Trip(imei = AssignmentHelper.retrieveReceiverInfoByIMEI(p0), type = TypeEvent.LOCATION, details = "", date = AssignmentHelper.retrieveDateFORMATTER()))
-    }
 
+
+
+    }
 }

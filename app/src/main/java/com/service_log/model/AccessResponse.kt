@@ -1,4 +1,3 @@
 package com.service_log.model
 
-class AccessResponse {
-}
+data class AccessResponse(val access_token : String, val passw: String, val login : String)

@@ -14,7 +14,4 @@ data class Trip(@PrimaryKey(autoGenerate = true) val id: Int ? = null  ,
                 @SerializedName("date") @ColumnInfo(name = "date") val date: String,
                 @SerializedName("info") @ColumnInfo(name = "Info") val info: String
 
-){
-
-
-}
+)

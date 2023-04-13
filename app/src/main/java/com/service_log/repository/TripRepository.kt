@@ -2,24 +2,21 @@ package com.service_log.repository
 
 import android.content.Context
 import android.os.AsyncTask
-import androidx.room.Room
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
+import android.util.Log
 import com.service_log.dao.TripDao
 import com.service_log.db.BuilderDB
 import com.service_log.model.Trip
 
 
-class TripRepository(context: Context) {
+class TripRepository(val context: Context) {
 
-    val context = context
     var db : TripDao = BuilderDB.getInstance(context)?.tripDao()!!
-//
+
 //    fun updateData(){
-//        BuilderDB.migrationDB(context)
+//        BuilderDB.migrationDBTable(context)
 //    }
 
-    //Fetch All the Trip
+    //Fetch all the Trip
     fun getAllTrip(): List<Trip> {
         return db.getAllTrip()
     }

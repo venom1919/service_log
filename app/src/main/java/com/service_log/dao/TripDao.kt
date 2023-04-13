@@ -4,8 +4,8 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import com.service_log.model.AccessData
 import com.service_log.model.Trip
-import java.util.Date
 
 @Dao
 interface TripDao {
@@ -17,13 +17,10 @@ interface TripDao {
     fun insertAll(trip: Trip)
 
     @Delete
-    fun delete(Trip: Trip)
+    fun delete(trip: Trip)
 
     @Query("DELETE FROM Trip")
     fun deleteDataId()
-
-//    @Query("delete from trip where id in (:idList)")
-//    fun deleteDataId(idList: List<Int>)
 
     @Query("SELECT * FROM Trip")
     fun getAllWritesAfter(): List<Trip>

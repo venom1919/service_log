@@ -52,15 +52,17 @@ class AssignmentHelper {
         fun retrieveDETAILS(typeEvent: TypeEvent): String{
 
             when(typeEvent){
-                TypeEvent.REBOOT -> return "phone was reboot"
+                TypeEvent.REBOOT -> return "phone has been reboot"
                 TypeEvent.LOCATION -> return "Location is"
                 TypeEvent.AIRPLANE_MODE -> return "user power AIRPLANE_MODE"
                 TypeEvent.BATTERY_CHANGE -> return "balance battery"
-                TypeEvent.CHANGE_STATE_1C -> return "1c was closed"
+                TypeEvent.CHANGE_STATE_1C -> return "1c has been closed"
                 TypeEvent.LOCATION_BUTTON_OFF -> return "user turned off location.GPS don't work"
                 TypeEvent.LOCATION_BUTTON_ON -> return "user turned on location.GPS work"
-                TypeEvent.POWER_ON -> return "phone was turned on!!!!"
+                TypeEvent.POWER_ON -> return "phone has been turned on!!!!"
+                TypeEvent.APP_ON -> return "app has been enabled!!!!"
             }
+
             return ""
         }
 

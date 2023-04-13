@@ -37,8 +37,8 @@ class GeneralService : Service() {
 
 //        val p = packageManager
 //        val componentName = ComponentName(
-//            this,
-//            com.service_log.activity.MainActivity::class.java
+//           this,
+//           com.service_log.activity.MainActivity::class.java
 //        ) // activity which is first time open in manifiest file which is declare as <category android:name="android.intent.category.LAUNCHER" />
 //
 //        p.setComponentEnabledSetting(
@@ -58,7 +58,6 @@ class GeneralService : Service() {
         startForeground(777, notification)
         trackTrace = TrackTrace(this)
         writeData()
-
 
     }
 

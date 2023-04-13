@@ -1,14 +1,18 @@
 package com.service_log.activity
 
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.service_log.R
 import com.service_log.enums.TypeEvent
 import com.service_log.model.Trip
+import com.service_log.receiver.BatteryChangedReceiver
 import com.service_log.repository.TripRepository
 import com.service_log.service.GeneralService
 import com.service_log.service.static.AssignmentHelper
@@ -24,8 +28,21 @@ open class MainActivity: AppCompatActivity(){
 //        dao = TripRepository(this)
 //        dao.updateData()
 
+        val p = packageManager
+        val componentName = ComponentName(
+            this,
+            MainActivity::class.java
+        )
+        p.setComponentEnabledSetting(
+            componentName,
+            PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+            PackageManager.DONT_KILL_APP
+        )
+
         dao = TripRepository(this)
-        dao.insertTrip(Trip(imei = AssignmentHelper.retrieveReceiverInfoByIMEI(this), type = TypeEvent.REBOOT, details = "phone was reboot", date = AssignmentHelper.retrieveDateFORMATTER(), info = "loading"))
+        dao.insertTrip(Trip(imei = AssignmentHelper.retrieveReceiverInfoByIMEI(this), type = TypeEvent.APP_ON, details = "app is on", date = AssignmentHelper.retrieveDateFORMATTER(), info = ""))
+
+        registerReceiver(BatteryChangedReceiver(), IntentFilter(Intent.ACTION_BATTERY_CHANGED))
 
         ////1+++++++++
         super.onCreate(savedInstanceState)
@@ -33,6 +50,15 @@ open class MainActivity: AppCompatActivity(){
         val i = Intent(this, GeneralService::class.java)
         startService(i)
         ////1--------
+
+        val ctx: Context = this // or you can replace **'this'** with your **ActivityName.this**
+
+        try {
+            val i = ctx.packageManager.getLaunchIntentForPackage("com.treedo.taburetka.tsd")
+            ctx.startActivity(i)
+        } catch (_: PackageManager.NameNotFoundException) {
+
+        }
 
         //////2++++++++++++
 //        val receiver = Intent(this, LocationReceiver::class.java)

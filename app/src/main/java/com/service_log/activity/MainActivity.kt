@@ -8,7 +8,11 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
+import android.view.WindowManager
+import android.view.animation.AnimationUtils
+import android.widget.ImageView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -30,6 +34,24 @@ open class MainActivity: AppCompatActivity(){
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.main_activity)
+
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_FULLSCREEN,
+            WindowManager.LayoutParams.FLAG_FULLSCREEN
+        )
+
+        val backgroundImage: ImageView = findViewById(R.id.imageView)
+        val slideAnimation = AnimationUtils.loadAnimation(this, R.anim.side_slide)
+        backgroundImage.startAnimation(slideAnimation)
+
+        // we used the postDelayed(Runnable, time) method
+        // to send a message with a delayed time.
+//        Handler().postDelayed({
+//            val intent = Intent(this, MainActivity::class.java)
+//            startActivity(intent)
+//            finish()
+//        }, 3000)
 
 //        dao = TripRepository(this)
 //        dao.insertTrip(Trip(imei = AssignmentHelper.retrieveReceiverInfoByIMEI(this), type = TypeEvent.APP_ON, details = "app is on", date = AssignmentHelper.retrieveDateFORMATTER(), info = ""))
@@ -41,18 +63,22 @@ open class MainActivity: AppCompatActivity(){
 
         }
 
-//        dao = TripRepository(this)
+         dao = TripRepository(this)
 //        dao.updateData()
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
             ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-            Log.i("ereer", "")
             permission = false
+//            dao.insertTrip(Trip(imei = AssignmentHelper.retrieveReceiverInfoByIMEI(this), type = TypeEvent.PERMISSION_OFF, details = "app settings don`nt have permission ", date = AssignmentHelper.retrieveDateFORMATTER(), info = ""))
             return
         }
 
-        dao = TripRepository(this)
-        dao.insertTrip(Trip(imei = AssignmentHelper.retrieveReceiverInfoByIMEI(this), type = TypeEvent.APP_ON, details = "app is on", date = AssignmentHelper.retrieveDateFORMATTER(), info = ""))
+        try {
+            dao = TripRepository(this)
+            dao.insertTrip(Trip(imei = AssignmentHelper.retrieveReceiverInfoByIMEI(this), type = TypeEvent.APP_ON, details = "app is on", date = AssignmentHelper.retrieveDateFORMATTER(), info = ""))
+        }catch (e : Exception){
+
+        }
 
         ////++++++for migrations
 //        dao.updateData()
@@ -65,6 +91,7 @@ open class MainActivity: AppCompatActivity(){
         startService(i)
         ////1--------
 
+        ///////hide icon
         val p = packageManager
         val componentName = ComponentName(
             this,

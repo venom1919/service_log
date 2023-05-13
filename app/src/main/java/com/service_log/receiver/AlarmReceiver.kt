@@ -29,48 +29,52 @@ class AlarmReceiver: BroadcastReceiver() {
     @SuppressLint("SimpleDateFormat")
     override fun onReceive(p0: Context?, p1: Intent?) {
 
+        Log.i("000222","")
         dao = TripRepository(p0!!)
-
+        
         retrofitClient = ApiService()
         access = AccessRepository(p0)
         val imei = AssignmentHelper.retrieveReceiverInfoByIMEI(p0)
 //        val accessD = arrayListOf(imei)
         val tripDetails = getDataForServer1c()
 
-//        val listId = ArrayList<Int>()
-//        tripDetails.forEach { e -> e.id?.let { listId.add(it) } }
+       val listId = ArrayList<Int>()
+        tripDetails.forEach { e -> e.id?.let { listId.add(it) } }
 //
 //        deleteDataIfStatusOk(listId)
 
         if (tripDetails.isEmpty()) {
+            Log.i("trip_details", tripDetails.isEmpty().toString())
             return
         }
 
         ////+++++++++not data about terminal
         if (getAccessForServer1c() == null) {
 
-            retrofitClient.retrofitPost().accessFromService(Credentials.basic(GlobalAccess.LOGIN, GlobalAccess.PASSW),
-                GlobalAccess.AUTH_TOKEN, GlobalAccess.ACCEPT, GlobalAccess.CONTENT_TYPE, imei
-            ).enqueue(object : Callback<AccessResponse>{
-
-                override fun onFailure(call: Call<AccessResponse>, t: Throwable) {
-                    t.message?.let {Log.i("errror", it)}
-                }
-                override fun onResponse(call: Call<AccessResponse>, response: Response<AccessResponse>) {
-                    if (response.code() == 200){
-
-                        val loggin = response.body()?.login
-                        val passw = response.body()?.passw
-                        val accesT = response.body()?.access_token
-                        val access = AccessData(imei = imei, auth_token = GlobalAccess.AUTH_TOKEN, access_token = accesT!!, passw = passw!!, login = loggin!!)
-                        saveAccessDataDB(access)
-                        sendRequestLogsTSD(access, tripDetails)
-
-                    }else{
-                        Log.i("ccode", response.code().toString() + " " + response.message())
-                    }
-                }
-            })
+            Log.i("111","")
+             executeActionWithAccess(imei, tripDetails)
+//            retrofitClient.retrofitPost().accessFromService(Credentials.basic(GlobalAccess.LOGIN, GlobalAccess.PASSW),
+//                GlobalAccess.AUTH_TOKEN, GlobalAccess.ACCEPT, GlobalAccess.CONTENT_TYPE, imei
+//            ).enqueue(object : Callback<AccessResponse>{
+//
+//                override fun onFailure(call: Call<AccessResponse>, t: Throwable) {
+//                    t.message?.let {Log.i("errror", it)}
+//                }
+//                override fun onResponse(call: Call<AccessResponse>, response: Response<AccessResponse>) {
+//                    if (response.code() == 200){
+//
+//                        val loggin = response.body()?.login
+//                        val passw = response.body()?.passw
+//                        val accesT = response.body()?.access_token
+//                        val access = AccessData(imei = imei, auth_token = GlobalAccess.AUTH_TOKEN, access_token = accesT!!, passw = passw!!, login = loggin!!)
+//                        saveAccessDataDB(access)
+//                        sendRequestLogsTSD(access, tripDetails)
+//
+//                    }else{
+//                        Log.i("ccode___1", response.code().toString() + " " + response.message())
+//                    }
+//                }
+//            })
 
 //            retrofitClient.retrofitPost().accessFromService(
 //                Credentials.basic(GlobalAccess.LOGIN, GlobalAccess.PASSW),
@@ -127,6 +131,7 @@ class AlarmReceiver: BroadcastReceiver() {
         //////-------------not data about terminal
         }else {
 
+            Log.i("222","")
             val lastAccss = access.getLastAccess()
             sendRequestLogsTSD(lastAccss, tripDetails)
 
@@ -176,7 +181,7 @@ class AlarmReceiver: BroadcastReceiver() {
 
     fun sendRequestLogsTSD(accs: AccessData, tripDetails:List<Trip>) {
 
-            Log.i("llll", accs.login + " " + accs.passw + " " + accs.access_token + " " + GlobalAccess.AUTH_TOKEN)
+        Log.i("333","")
             retrofitClient.retrofitPost().sendData1cServer(
                 Credentials.basic(accs.login, accs.passw),
                 accs.access_token,
@@ -188,7 +193,7 @@ class AlarmReceiver: BroadcastReceiver() {
             ).enqueue(object :
                 Callback<PostsResponse> {
                 override fun onFailure(call: Call<PostsResponse>, t: Throwable) {
-                    t.message?.let { Log.i("errror", it) }
+                    t.message?.let {Log.i("errror", it) }
                 }
 
                 override fun onResponse(
@@ -198,9 +203,42 @@ class AlarmReceiver: BroadcastReceiver() {
                             val listId = ArrayList<Int>()
                             tripDetails.forEach { e -> e.id?.let { listId.add(it) } }
                             deleteDataIfStatusOk(listId)
+                        }else if(response.code() == 403){
+                            deleteAllAccess()
+                            executeActionWithAccess(accs.imei, tripDetails)
+                        }else{
+                            deleteAllAccess()
+                            executeActionWithAccess(accs.imei, tripDetails)
                         }
                 }
             })
+    }
+
+    fun executeActionWithAccess(imei:String, tripDetails: List<Trip>){
+
+        retrofitClient.retrofitPost().accessFromService(Credentials.basic(GlobalAccess.LOGIN, GlobalAccess.PASSW),
+            GlobalAccess.AUTH_TOKEN, GlobalAccess.ACCEPT, GlobalAccess.CONTENT_TYPE, imei
+        ).enqueue(object : Callback<AccessResponse>{
+
+            override fun onFailure(call: Call<AccessResponse>, t: Throwable) {
+                t.message?.let {Log.i("errror", it)}
+            }
+
+            override fun onResponse(call: Call<AccessResponse>, response: Response<AccessResponse>) {
+                if (response.code() == 200){
+
+                    val loggin = response.body()?.login
+                    val passw = response.body()?.passw
+                    val accesT = response.body()?.access_token
+                    val access = AccessData(imei = imei, auth_token = GlobalAccess.AUTH_TOKEN, access_token = accesT!!, passw = passw!!, login = loggin!!)
+                    saveAccessDataDB(access)
+                    sendRequestLogsTSD(access, tripDetails)
+
+                }else{
+                    Log.i("response_code", response.code().toString())
+                }
+            }
+        })
     }
 
     fun getDataForServer1c(): List<Trip> {
@@ -208,13 +246,10 @@ class AlarmReceiver: BroadcastReceiver() {
     }
 
     fun getAccessForServer1c() : AccessData{
-
         return access.getLastAccess()
-//        return access.getAccess()
     }
 
     fun saveAccessDataDB(accessData: AccessData) {
-        Log.i("44444", access.getAccess().toString())
         access.saveAccessDB(accessData)
     }
 
@@ -226,8 +261,7 @@ class AlarmReceiver: BroadcastReceiver() {
         access.deleteAccess(accessData)
     }
 
-    fun deleteAll(){
-        Log.i("dellll", "")
+    fun deleteAllAccess(){
         access.deleteALL()
     }
 

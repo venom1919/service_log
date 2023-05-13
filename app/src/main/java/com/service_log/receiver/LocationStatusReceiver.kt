@@ -24,17 +24,13 @@ class LocationStatusReceiver : BroadcastReceiver() {
 
         val locationStatus = AssignmentHelper.retrieveReceiverINFOByLocationButton(p0!!)
 
-        Log.i("receiver_Location_on", locationStatus.toString())
-
         val onOrOff: String = if (locationStatus){
             TrackTrace(p0)
             AssignmentHelper.retrieveDETAILS(TypeEvent.LOCATION_BUTTON_ON)
         }else{
             AssignmentHelper.retrieveDETAILS(TypeEvent.LOCATION_BUTTON_OFF)
         }
-
         dao = TripRepository(p0)
         dao.insertTrip(Trip(imei = AssignmentHelper.retrieveReceiverInfoByIMEI(p0), type = if (locationStatus) TypeEvent.LOCATION_BUTTON_ON else TypeEvent.LOCATION_BUTTON_OFF, details = onOrOff, date = AssignmentHelper.retrieveDateFORMATTER(), info = ""))
-
     }
 }

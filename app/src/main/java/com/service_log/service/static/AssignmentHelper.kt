@@ -9,6 +9,7 @@ import android.provider.Settings
 import android.telephony.TelephonyManager
 import androidx.annotation.RequiresApi
 import com.service_log.enums.TypeEvent
+import com.service_log.enums.TypeEvent.*
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.HashMap
@@ -52,26 +53,27 @@ class AssignmentHelper {
         fun retrieveDETAILS(typeEvent: TypeEvent): String{
 
             when(typeEvent){
-                TypeEvent.REBOOT -> return "phone has been reboot"
-                TypeEvent.LOCATION -> return "Location is"
-                TypeEvent.AIRPLANE_MODE -> return "user power AIRPLANE_MODE"
-                TypeEvent.BATTERY_CHANGE -> return "balance battery"
-                TypeEvent.CHANGE_STATE_1C -> return "1c has been closed"
-                TypeEvent.LOCATION_BUTTON_OFF -> return "user turned off location.GPS don't work"
-                TypeEvent.LOCATION_BUTTON_ON -> return "user turned on location.GPS work"
-                TypeEvent.POWER_ON -> return "phone has been turned on!!!!"
-                TypeEvent.APP_ON -> return "app has been enabled!!!!"
+                REBOOT -> return "phone has been reboot"
+                LOCATION -> return "Location is"
+                AIRPLANE_MODE -> return "user power AIRPLANE_MODE"
+                BATTERY_CHANGE -> return "balance battery"
+                CHANGE_STATE_1C -> return "1c has been closed"
+                LOCATION_BUTTON_OFF -> return "user turned off location.GPS don't work"
+                LOCATION_BUTTON_ON -> return "user turned on location.GPS work"
+                POWER_ON -> return "phone has been turned on!!!!"
+                APP_ON -> return "app has been enabled!!!!"
+                PERMISSION_OFF -> TODO()
             }
 
             return ""
         }
 
-        @SuppressLint("ServiceCast")
-        fun retrieveDataAbout1c(context: Context): kotlin.collections.HashMap<String, Boolean> {
-            val hashMap:HashMap<String, Boolean> = HashMap<String, Boolean>()
-            hashMap.put("", true)
-            return hashMap
-        }
+//        @SuppressLint("ServiceCast")
+//        fun retrieveDataAbout1c(context: Context): kotlin.collections.HashMap<String, Boolean> {
+//            val hashMap:HashMap<String, Boolean> = HashMap<String, Boolean>()
+//            hashMap.put("", true)
+//            return hashMap
+//        }
 
         @SuppressLint("SimpleDateFormat")
         @RequiresApi(Build.VERSION_CODES.O)

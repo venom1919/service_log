@@ -12,7 +12,6 @@ class AccessRepository(var context: Context) {
     var db : AccessDAO = BuilderDB.getInstance(context)?.accessDao()!!
 
     fun getAccess() : Map<String, AccessData>{
-
         val map = mutableMapOf<String, AccessData>()
         map[AssignmentHelper.retrieveReceiverInfoByIMEI(context)] = db.getAccessData()
         return map
@@ -31,7 +30,6 @@ class AccessRepository(var context: Context) {
     }
 
     fun deleteALL(){
-        Log.i("dellete","")
         db.deleteAll()
     }
 }

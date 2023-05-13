@@ -43,6 +43,9 @@ class TrackTrace(context: Context) : GoogleApiClient.ConnectionCallbacks,
     var lstLongitude = 0.0
     var lstLatitude = 0.0
 
+    var checkLongitude = 0.0
+    var checkLatitude = 0.0
+
     private lateinit var locationRequest: LocationRequest
     private lateinit var locationCallback: LocationCallback
     private var imei: String
@@ -68,10 +71,8 @@ class TrackTrace(context: Context) : GoogleApiClient.ConnectionCallbacks,
         override fun onStopped() {}
         override fun onFirstFix(ttffMillis: Int) {}
         override fun onSatelliteStatusChanged(status: GnssStatus) {
-            Log.v("TAG______GNSSSS", "GNSS Status: " + status.satelliteCount + " satellites.")
         }
     }
-
 
     init {
 
@@ -162,19 +163,15 @@ class TrackTrace(context: Context) : GoogleApiClient.ConnectionCallbacks,
             dao.insertTrip(Trip(imei = imei, type = TypeEvent.LOCATION_BUTTON_OFF, details = "", date = AssignmentHelper.retrieveDateFORMATTER(), info = ""))
                 return false
         }
-
         return true
-
     }
 
-    private fun getLocationUpdates()
-    {
-
+    private fun getLocationUpdates() {
         if (!locationIsActiveCurrent()){
             return
         }
 
-//        fusedLocationClient2 = LocationServices.getFusedLocationProviderClient(context!!)
+//      fusedLocationClient2 = LocationServices.getFusedLocationProviderClient(context!!)
         locationRequest = LocationRequest()
         locationRequest.interval = 0
         locationRequest.fastestInterval = 0
@@ -213,12 +210,12 @@ class TrackTrace(context: Context) : GoogleApiClient.ConnectionCallbacks,
 //        )
     }
 
+
+
     // stop location updates
 //    private fun stopLocationUpdates() {
 //        fusedLocationClient2.removeLocationUpdates(locationCallback)
 //    }
-
-
     private fun initial(context: Context){
 
 //        if (!permission){
@@ -228,6 +225,7 @@ class TrackTrace(context: Context) : GoogleApiClient.ConnectionCallbacks,
         if (!locationIsActiveCurrent()){
             return
         }
+
         mLocationClient = GoogleApiClient.Builder(context)
             .addConnectionCallbacks(this)
             .addOnConnectionFailedListener(this)
@@ -268,7 +266,10 @@ class TrackTrace(context: Context) : GoogleApiClient.ConnectionCallbacks,
                 context,
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
-        ) { return }
+        ) {
+            dao.insertTrip(Trip(imei = AssignmentHelper.retrieveReceiverInfoByIMEI(context), type = TypeEvent.PERMISSION_OFF, details = "app settings don`nt have permission ", date = AssignmentHelper.retrieveDateFORMATTER(), info = ""))
+            return
+        }
 
         LocationServices.FusedLocationApi.requestLocationUpdates(
             mLocationClient,
@@ -278,7 +279,6 @@ class TrackTrace(context: Context) : GoogleApiClient.ConnectionCallbacks,
     }
 
     override fun onConnectionSuspended(p0: Int) {
-        Log.i("xcxqe23", "xzx")
     }
 
     override fun onLocationChanged(p0: Location?) {
@@ -287,18 +287,15 @@ class TrackTrace(context: Context) : GoogleApiClient.ConnectionCallbacks,
         var startLong = p0.longitude
 
 //        calculateDistance(p0.longitude, p0.latitude)
-        Log.i("tatatacx", p0.getAccuracy().toString() + " " + p0.latitude.toString() + " " + p0.longitude.toString())
 
         if (p0.getAccuracy() > 100){
             getLocationOldMethod()
         }
 
-        Log.i("datata",AssignmentHelper.retrieveDateFORMATTER())
 //        dao.insertTrip(Trip(imei = imei, type = TypeEvent.LOCATION, details = p0.latitude.toString() + " " + p0.longitude.toString(), date = AssignmentHelper.retrieveDateFORMATTER()))
 
         val data = dao.getAllTrip()
         data.forEach {
-            Log.i("detete", it.date)
         }
     }
 
@@ -322,11 +319,18 @@ class TrackTrace(context: Context) : GoogleApiClient.ConnectionCallbacks,
             object : android.location.LocationListener {
                 override fun onLocationChanged(location: Location) {
 
-                    val acc = location.accuracy
+//                    val acc = location.accuracy
                     latitude = location.latitude
                     longitude = location.longitude
 
+                    if (latitude == checkLatitude && longitude == checkLongitude) {
+                        return
+                    }
+
+//                    Log.i("firsat", latitude.toString() + " " + checkLatitude + " " + longitude.toString() + " " + longitude)
                     dao.insertTrip(Trip(imei = imei, type = TypeEvent.LOCATION, details = "$latitude $longitude", date = AssignmentHelper.retrieveDateFORMATTER(), info = "old_method"))
+                    checkLongitude = longitude
+                    checkLatitude = latitude
                     location.reset()
 
                 }
@@ -362,8 +366,6 @@ class TrackTrace(context: Context) : GoogleApiClient.ConnectionCallbacks,
         }
 
         val bestProvider = locationManagerT.getBestProvider(Criteria(), true)
-
-        Log.i("bestt_pr", bestProvider.toString())
 
         locationManagerT.requestLocationUpdates(
             bestProvider!!,
@@ -414,7 +416,15 @@ class TrackTrace(context: Context) : GoogleApiClient.ConnectionCallbacks,
                     val c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
                     val d = R * c * 1000
 
+                    if (latitude == checkLatitude && longitude == checkLongitude){
+                        return
+                    }
+
+//                    Log.i("first222", latitude.toString() + " " + checkLatitude + " " + longitude.toString() + " " + longitude)
+
                     dao.insertTrip(Trip(imei = imei, type = TypeEvent.LOCATION, details = "$latitude $longitude", date = AssignmentHelper.retrieveDateFORMATTER(), info = "isOnline(context, acc.toString())"))
+                    checkLatitude = latitude
+                    checkLongitude = longitude
                     location.reset()
 
                 }
@@ -444,20 +454,6 @@ class TrackTrace(context: Context) : GoogleApiClient.ConnectionCallbacks,
             0f,
             mlocListener
         )
-
-        Log.i("lication__444",
-            locationManagerT_2.getLastKnownLocation(LocationManager.GPS_PROVIDER).toString()
-        )
-
-        Log.i("lication__222", latitude.toString() + " " + longitude.toString())
-
-    }
-
-    fun logicComputeIsTrueDistance(longitude:Double, latitude: Double, location: Location): Boolean{
-
-//        if ()
-
-       return false
     }
 
     @SuppressLint("MissingPermission")
@@ -468,11 +464,17 @@ class TrackTrace(context: Context) : GoogleApiClient.ConnectionCallbacks,
         val locationListener: android.location.LocationListener = object : android.location.LocationListener {
 
             override fun onLocationChanged(location: Location) {
-                dao.insertTrip(Trip(imei = imei, type = TypeEvent.LOCATION, details = location.latitude.toString() + " " + location.longitude.toString(), date = AssignmentHelper.retrieveDateFORMATTER(), info = ""))
-            }
 
-            override fun onFlushComplete(requestCode: Int) {
-                super.onFlushComplete(requestCode)
+                if (location.latitude == checkLatitude && location.longitude == checkLongitude){
+                    return
+                }
+
+//                Log.i("second", location.latitude.toString() + " " + checkLatitude + " " + location.longitude.toString() + " " + checkLongitude)
+
+                dao.insertTrip(Trip(imei = imei, type = TypeEvent.LOCATION, details = location.latitude.toString() + " " + location.longitude.toString(), date = AssignmentHelper.retrieveDateFORMATTER(), info = ""))
+                checkLatitude = location.latitude
+                checkLongitude = location.longitude
+
             }
 
             override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
@@ -516,7 +518,7 @@ class TrackTrace(context: Context) : GoogleApiClient.ConnectionCallbacks,
         val meter = valueResult % 1000
         val meterInDec: Int = Integer.valueOf(newFormat.format(meter))
 
-        Log.i("Radius_alue", "" + valueResult + "   KM  " + kmInDec + " Meter   " + meterInDec + " " + endLat + " " + endLon + "df  " + radius * c)
+//        Log.i("Radius_alue", "" + valueResult + "   KM  " + kmInDec + " Meter   " + meterInDec + " " + endLat + " " + endLon + "df  " + radius * c)
 
         startLatitude = endLat
         startLongitude = endLon
@@ -537,13 +539,12 @@ class TrackTrace(context: Context) : GoogleApiClient.ConnectionCallbacks,
 
     }
 
-    @SuppressLint("MissingPermission", "SetTextI18n")
-    private fun getLocation(context: Context) {
-        mFusedLocationClient.lastLocation.addOnCompleteListener { task ->
-            var location: Location? = task.result
-            Log.i("listnern", location?.latitude.toString() + " " + location?.longitude.toString())
-        }
-    }
+//    @SuppressLint("MissingPermission", "SetTextI18n")
+//    private fun getLocation(context: Context) {
+//        mFusedLocationClient.lastLocation.addOnCompleteListener { task ->
+//            var location: Location? = task.result
+//        }
+//    }
 
 
     fun getRegisteredCellInfo(cellInfos: MutableList<CellInfo>): ArrayList<CellInfo> {
@@ -620,8 +621,6 @@ class TrackTrace(context: Context) : GoogleApiClient.ConnectionCallbacks,
                                         is CellInfoWcdma -> info2.cellSignalStrength.dbm
                                         else -> 0
                                     }
-
-                                    Log.i("sim2", subs.carrierName.toString())
                                 } else {
 
                                     strength2 = -1
@@ -661,65 +660,63 @@ class TrackTrace(context: Context) : GoogleApiClient.ConnectionCallbacks,
 
                         strength2 = -2
 
+                        }
                     }
                 }
-
             }
         }
-        Log.i("final strenght ",  strength1.toString())
-    }
     }
 
-private fun LocationManager.requestLocationUpdates(
-    gpsProvider: String,
-    i: Int,
-    i1: Int,
-    locationListener: LocationListener
-) {
-
-    Log.i("gpsDatc", i.toString())
-}
-
-@RequiresApi(Build.VERSION_CODES.N)
-open class T : GnssStatus.Callback() {
-
-    override fun onStarted() {
-
-        super.onStarted()
-        Log.i("dxc", "")
-
-    }
-
-    override fun onStopped() {
-        super.onStopped()
-    }
-
-    override fun onFirstFix(ttffMillis: Int) {
-        super.onFirstFix(ttffMillis)
-    }
-
-    @RequiresApi(Build.VERSION_CODES.R)
-    override fun onSatelliteStatusChanged(status: GnssStatus) {
-        super.onSatelliteStatusChanged(status)
-
-
-//        rt(status.satelliteCount, status)
-
-    }
-
-//    @RequiresApi(Build.VERSION_CODES.O)
-//    fun rt(fl: Int, status: GnssStatus){
+//private fun LocationManager.requestLocationUpdates(
+//    gpsProvider: String,
+//    i: Int,
+//    i1: Int,
+//    locationListener: LocationListener
+//) {
 //
-//        for (i in 0 until fl){
-//            if (status.getCn0DbHz(i) > 0){
-//                Log.i("scxШУм", status.getCn0DbHz(i).toString() + " " +  status.getSvid(i))
+//    Log.i("gpsDatc", i.toString())
+//}
+
+//@RequiresApi(Build.VERSION_CODES.N)
+//open class T : GnssStatus.Callback() {
 //
-//            }
-//            Log.i("lktr", status.getAzimuthDegrees(i).toString())
-//        }
+//    override fun onStarted() {
+//
+//        super.onStarted()
+//        Log.i("dxc", "")
 //
 //    }
-
-
-}
+//
+//    override fun onStopped() {
+//        super.onStopped()
+//    }
+//
+//    override fun onFirstFix(ttffMillis: Int) {
+//        super.onFirstFix(ttffMillis)
+//    }
+//
+//    @RequiresApi(Build.VERSION_CODES.R)
+//    override fun onSatelliteStatusChanged(status: GnssStatus) {
+//        super.onSatelliteStatusChanged(status)
+//
+//
+////        rt(status.satelliteCount, status)
+//
+//    }
+//
+////    @RequiresApi(Build.VERSION_CODES.O)
+////    fun rt(fl: Int, status: GnssStatus){
+////
+////        for (i in 0 until fl){
+////            if (status.getCn0DbHz(i) > 0){
+////                Log.i("scxШУм", status.getCn0DbHz(i).toString() + " " +  status.getSvid(i))
+////
+////            }
+////            Log.i("lktr", status.getAzimuthDegrees(i).toString())
+////        }
+////
+////    }
+//
+//
+//}
 

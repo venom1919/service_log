@@ -3,7 +3,10 @@ package com.service_log.service
 
 import android.R
 import android.annotation.SuppressLint
-import android.app.*
+import android.app.AlarmManager
+import android.app.Notification
+import android.app.PendingIntent
+import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.location.Location
@@ -54,8 +57,8 @@ class GeneralService : Service() {
 
         val builder: Notification.Builder = Notification.Builder(this)
             .setSmallIcon(R.drawable.star_on)
-        val notification: Notification = if (Build.VERSION.SDK_INT < 16) builder.getNotification() else builder.build()
-        startForeground(777, notification)
+        /*val notification: Notification = if (Build.VERSION.SDK_INT < 16) builder.getNotification() else builder.build()
+        startForeground(777, notification)*/
         trackTrace = TrackTrace(this)
         writeData()
 

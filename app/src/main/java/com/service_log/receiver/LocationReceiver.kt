@@ -23,6 +23,5 @@ class LocationReceiver : BroadcastReceiver() {
         dao.insertTrip(Trip(imei = AssignmentHelper.retrieveReceiverInfoByIMEI(p0), type = TypeEvent.LOCATION, details = "", date = AssignmentHelper.retrieveDateFORMATTER(), info = ""))
 
 
-
     }
 }

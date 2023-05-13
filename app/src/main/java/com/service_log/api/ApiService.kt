@@ -1,5 +1,6 @@
 package com.service_log.api
 
+import android.util.Log
 import com.google.gson.GsonBuilder
 import com.service_log.constant.GlobalAccess
 import retrofit2.Retrofit

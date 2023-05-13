@@ -36,10 +36,10 @@ interface RetrofitApi {
 //        @Body accessD:ArrayList<AccessData>
 ////        @Body imei: ArrayList<String>,
 //    ): retrofit2.Call<AccessData>
-@POST("AccessTSDByIMEI")
+
+    @POST("AccessTSDByIMEI")
     fun accessFromService(
     @Header("Authorization") Authorization: String,
-//    @Header("Access-Token") accessToken: String,
     @Header("auth-token") authToken: String,
     @Header("Accept") Accept: String,
     @Header("Content-Type") Content_Type: String,
